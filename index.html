@@ -152,37 +152,12 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            const pointLight = new THREE.PointLight(0xffffff, 0.1);
-            pointLight.position.set(5, 5, 5);
-            scene.add(pointLight);
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
             scene.add(ambientLight);
             
-            // Main 3D Shape
-            const shapeGeometry = new THREE.TorusKnotGeometry(0.6, 0.2, 100, 16);
-            const shapeMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0xffffff, 
-                wireframe: true,
-                metalness: 0.5,
-                roughness: 0.5
-            });
-            const mainShape = new THREE.Mesh(shapeGeometry, shapeMaterial);
-            scene.add(mainShape);
-
-            // Orbiting 3D Shape
-            const orbitingShapeGeometry = new THREE.TorusKnotGeometry(0.2, 0.05, 100, 16);
-            const orbitingShapeMaterial = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                wireframe: true,
-                metalness: 0.5,
-                roughness: 0.5
-            });
-            const orbitingShape = new THREE.Mesh(orbitingShapeGeometry, orbitingShapeMaterial);
-            scene.add(orbitingShape);
-
-            // Particles
+            // Background Particles
             const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 7000;
+            const particlesCount = 5000;
             const posArray = new Float32Array(particlesCount * 3);
             for(let i = 0; i < particlesCount * 3; i++) {
                 posArray[i] = (Math.random() - 0.5) * 20;
@@ -196,6 +171,27 @@
             });
             const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
             scene.add(particlesMesh);
+
+            // Mouse Sparkle Particles
+            const sparkleGeometry = new THREE.BufferGeometry();
+            const sparkleCount = 200;
+            const sparklePosArray = new Float32Array(sparkleCount * 3);
+            const sparkleInfo = [];
+            for(let i = 0; i < sparkleCount; i++) {
+                sparklePosArray[i*3] = sparklePosArray[i*3+1] = sparklePosArray[i*3+2] = 9999; // Start offscreen
+                sparkleInfo.push({ life: 0, velocity: new THREE.Vector3() });
+            }
+            sparkleGeometry.setAttribute('position', new THREE.BufferAttribute(sparklePosArray, 3));
+            const sparkleMaterial = new THREE.PointsMaterial({
+                size: 0.05,
+                color: 0xffffff,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const sparkles = new THREE.Points(sparkleGeometry, sparkleMaterial);
+            scene.add(sparkles);
+            let currentSparkle = 0;
             
             camera.position.z = 5;
 
@@ -206,18 +202,17 @@
                 new THREE.Color(0xff4500), // Projects (orange-red)
                 new THREE.Color(0x9400d3)  // Contact (dark violet)
             ];
-            let currentScroll = 0;
             let mouseX = 0;
             let mouseY = 0;
             let activeSectionIndex = 0;
+            const mousePosition = new THREE.Vector2();
 
             // --- Event Listeners ---
-            window.addEventListener('scroll', () => {
-                currentScroll = window.scrollY;
-            });
             document.addEventListener('mousemove', (event) => {
                 mouseX = event.clientX;
                 mouseY = event.clientY;
+                mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mousePosition.y = -(event.clientY / window.innerHeight) * 2 + 1;
             });
             window.addEventListener('resize', () => {
                 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -230,27 +225,31 @@
             const animate = () => {
                 const elapsedTime = clock.getElapsedTime();
                 
-                // Animate shapes
-                mainShape.rotation.x = 0.1 * elapsedTime;
-                mainShape.rotation.y = 0.1 * elapsedTime;
-
-                orbitingShape.position.x = Math.sin(elapsedTime * 0.4) * 2;
-                orbitingShape.position.z = Math.cos(elapsedTime * 0.4) * 2;
-                orbitingShape.position.y = Math.sin(elapsedTime * 0.8) * 0.5;
-                orbitingShape.rotation.x = -elapsedTime * 0.3;
-                orbitingShape.rotation.y = -elapsedTime * 0.3;
-
-                // Animate particles based on mouse
+                // Animate background particles
                 particlesMesh.rotation.y = -0.01 * elapsedTime;
                 particlesMesh.rotation.x += (-(mouseY / window.innerHeight - 0.5) * 0.5 - particlesMesh.rotation.x) * 0.02;
                 particlesMesh.rotation.y += (-(mouseX / window.innerWidth - 0.5) * 0.5 - particlesMesh.rotation.y) * 0.02;
+
+                // Animate sparkles
+                for (let i = 0; i < sparkleCount; i++) {
+                    const info = sparkleInfo[i];
+                    if (info.life > 0) {
+                        info.life -= 0.02;
+                        if (info.life <= 0) {
+                            sparklePosArray[i*3] = sparklePosArray[i*3+1] = sparklePosArray[i*3+2] = 9999;
+                        } else {
+                            sparklePosArray[i*3] += info.velocity.x;
+                            sparklePosArray[i*3+1] += info.velocity.y;
+                            sparklePosArray[i*3+2] += info.velocity.z;
+                        }
+                    }
+                }
+                sparkleGeometry.attributes.position.needsUpdate = true;
 
                 // Safely get the target color based on the active section
                 const targetColor = sectionColors[activeSectionIndex];
                 if (targetColor) {
                     particlesMaterial.color.lerp(targetColor, 0.05);
-                    shapeMaterial.color.lerp(targetColor, 0.05);
-                    orbitingShapeMaterial.color.lerp(targetColor, 0.05);
                 }
 
                 // Camera parallax
@@ -263,6 +262,30 @@
                 window.requestAnimationFrame(animate);
             };
             animate();
+
+            // Function to spawn sparkles
+            function spawnSparkle() {
+                const info = sparkleInfo[currentSparkle];
+                info.life = Math.random() * 2 + 1; // Lifespan between 1 and 3 seconds
+
+                // Get mouse position in 3D space
+                const mouse3D = new THREE.Vector3(mousePosition.x, mousePosition.y, 0.5);
+                mouse3D.unproject(camera);
+                
+                sparklePosArray[currentSparkle*3] = mouse3D.x;
+                sparklePosArray[currentSparkle*3+1] = mouse3D.y;
+                sparklePosArray[currentSparkle*3+2] = mouse3D.z;
+
+                info.velocity.set(
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01
+                );
+                
+                currentSparkle = (currentSparkle + 1) % sparkleCount;
+            }
+            window.addEventListener('mousemove', spawnSparkle);
+
 
             // --- Scroll Observer ---
             const sections = document.querySelectorAll('section');
