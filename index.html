@@ -9,26 +9,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
         }
-        body::before {
-            content: '';
+        #bg-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
-            opacity: 0.1;
             z-index: -1;
-        }
-        .page {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .page.active {
-            display: block;
         }
         .nav-link {
             cursor: pointer;
@@ -52,190 +46,166 @@
         .nav-link.active::after, .nav-link:hover::after {
             width: 100%;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .typing-cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1.2em;
-            background-color: #22d3ee;
-            animation: blink 0.7s infinite;
-            vertical-align: bottom;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        section {
+            min-height: 80vh;
+            padding: 10rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+<body class="bg-gray-900 text-white">
 
-    <div class="bg-gray-800 bg-opacity-70 backdrop-blur-md border border-gray-700 rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden">
-        <nav class="p-4 md:p-6 border-b border-gray-700">
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="fixed top-0 left-0 right-0 bg-gray-900 bg-opacity-50 backdrop-blur-md z-10 border-b border-gray-800">
+        <nav class="max-w-6xl mx-auto p-4">
             <ul class="flex justify-center md:justify-end space-x-4 md:space-x-8 text-gray-400 font-bold">
-                <li><a class="nav-link active" data-page="home">Home</a></li>
-                <li><a class="nav-link" data-page="about">About</a></li>
-                <li><a class="nav-link" data-page="projects">Projects</a></li>
-                <li><a class="nav-link" data-page="contact">Contact</a></li>
+                <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+                <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+                <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
+                <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
             </ul>
         </nav>
+    </header>
 
-        <main class="p-6 md:p-10">
-            
-            <!-- Home Page -->
-            <div id="home" class="page active">
-                <div class="text-center flex flex-col items-center">
-                    <!-- Replace with your photo -->
-                    <img src="https://placehold.co/150x150/1a202c/ffffff?text=AS" alt="Alok Shaji's profile picture" class="w-32 h-32 rounded-full mb-6 border-4 border-gray-600 shadow-lg">
-                    <h1 class="text-3xl md:text-5xl font-bold text-cyan-400 mb-2">Alok Shaji</h1>
-                    <h2 class="text-xl md:text-2xl text-gray-300"><span id="typing-text"></span><span class="typing-cursor"></span></h2>
-                </div>
+    <main class="relative z-0">
+        
+        <section id="home" class="min-h-screen">
+            <div class="text-center flex flex-col items-center bg-black bg-opacity-20 p-8 rounded-lg">
+                <!-- Replace with your photo: 'alok1.jpg' -->
+                <img src="https://placehold.co/150x150/1a202c/ffffff?text=AS" alt="Alok Shaji's profile picture" class="w-32 h-32 rounded-full mb-6 border-4 border-cyan-400 shadow-lg">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-2">Alok Shaji</h1>
+                <h2 class="text-xl md:text-2xl text-cyan-400">Student</h2>
             </div>
+        </section>
 
-            <!-- About Page -->
-            <div id="about" class="page">
-                <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 mb-6 text-center">About Me</h2>
+        <section id="about">
+            <div class="max-w-4xl mx-auto bg-gray-800 bg-opacity-70 backdrop-blur-md border border-gray-700 rounded-2xl p-8 md:p-12 shadow-2xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-cyan-400 mb-6 text-center">About Me</h2>
                 <div class="flex flex-col md:flex-row items-center gap-8">
                     <!-- Replace with your photo -->
-                    <img src="https://placehold.co/400x400/1f2937/ffffff?text=About+Me+Photo" alt="A photo of Alok Shaji" class="w-48 h-48 md:w-64 md:h-64 rounded-lg object-cover shadow-lg">
-                    <p class="text-gray-300 leading-relaxed text-center md:text-left">
-                        I'm a passionate Computer Science and Engineering student at Sahrdaya College of Engineering and Technology. My journey in technology is driven by a curiosity for how things work and a desire to build solutions that make a difference. I enjoy tackling complex problems and learning new technologies. When I'm not coding, I enjoy exploring photography and reading about the latest tech trends.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Projects Page -->
-            <div id="projects" class="page">
-                <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 mb-6 text-center">My Projects</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-                        <!-- Replace with your project photo -->
-                        <img src="https://placehold.co/600x400/1f2937/ffffff?text=Project+One" alt="Project 1 Screenshot" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg text-white">Project One</h3>
-                            <p class="text-gray-400 text-sm mt-1">A brief description of the first project, its purpose, and the technologies used.</p>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-                        <!-- Replace with your project photo -->
-                        <img src="https://placehold.co/600x400/1f2937/ffffff?text=Project+Two" alt="Project 2 Screenshot" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg text-white">Project Two</h3>
-                            <p class="text-gray-400 text-sm mt-1">A brief description of the second project, its purpose, and the technologies used.</p>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-                        <!-- Replace with your project photo -->
-                        <img src="https://placehold.co/600x400/1f2937/ffffff?text=Project+Three" alt="Project 3 Screenshot" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg text-white">Project Three</h3>
-                            <p class="text-gray-400 text-sm mt-1">A brief description of the third project, its purpose, and the technologies used.</p>
-                        </div>
+                    <img src="https://placehold.co/400x400/1f2937/ffffff?text=About+Me" alt="A photo of Alok Shaji" class="w-48 h-48 md:w-64 md:h-64 rounded-lg object-cover shadow-lg flex-shrink-0">
+                    <div class="text-gray-300 leading-relaxed text-center md:text-left">
+                        <p class="mb-4">
+                            I'm a passionate Computer Science and Engineering student at Sahrdaya College of Engineering and Technology. My journey in technology is driven by a curiosity for how things work and a desire to build solutions that make a tangible difference.
+                        </p>
+                        <p class="mb-4">
+                            I thrive on tackling complex problems, whether it's designing an intuitive user interface or architecting a robust backend system. I'm always eager to learn new technologies and apply them to real-world challenges.
+                        </p>
+                        <p>
+                            When I'm not coding, I enjoy exploring the world through my camera lens and reading about the latest trends shaping our technological future.
+                        </p>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Contact Page -->
-            <div id="contact" class="page">
-                <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 mb-6 text-center">Get In Touch</h2>
-                <div class="max-w-lg mx-auto">
-                    <form action="#" method="POST" class="space-y-4">
-                        <div>
-                            <label for="name" class="sr-only">Name</label>
-                            <input type="text" name="name" id="name" placeholder="Your Name" class="w-full bg-gray-700 border-gray-600 text-white rounded-md p-3 focus:ring-cyan-500 focus:border-cyan-500 transition">
-                        </div>
-                        <div>
-                            <label for="email" class="sr-only">Email</label>
-                            <input type="email" name="email" id="email" placeholder="Your Email" class="w-full bg-gray-700 border-gray-600 text-white rounded-md p-3 focus:ring-cyan-500 focus:border-cyan-500 transition">
-                        </div>
-                        <div>
-                            <label for="message" class="sr-only">Message</label>
-                            <textarea name="message" id="message" rows="4" placeholder="Your Message" class="w-full bg-gray-700 border-gray-600 text-white rounded-md p-3 focus:ring-cyan-500 focus:border-cyan-500 transition"></textarea>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-300">Send Message</button>
-                        </div>
-                    </form>
-                    <div class="flex justify-center items-center space-x-6 mt-8">
-                        <a href="https://www.instagram.com/alok.shaji/?hl=en" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c-4.013 0-4.485.017-6.053.088C4.69 2.158 3.588 2.53 2.793 3.325S2.158 4.69 2.088 6.257C2.017 7.825 2 8.297 2 12.315s.017 4.49.088 6.053c.07.1.562.438 1.357 1.232.795.795 1.168 1.287 1.232 1.357.568.07 1.04.088 2.608.088s4.49-.017 6.053-.088c1.568-.07 2.04-.253 2.835-1.048.795-.795 1.168-1.287 1.232-1.357.07-.568.088-1.04.088-2.608s-.017-4.49-.088-6.053c-.07-1.568-.438-2.04-1.232-2.835-.795-.795-1.287-1.168-1.357-1.232C16.805 2.017 16.333 2 12.315 2zM8.29 6.75a.75.75 0 01.75-.75h5.92a.75.75 0 010 1.5H9.04a.75.75 0 01-.75-.75zm0 3.5a.75.75 0 01.75-.75h5.92a.75.75 0 010 1.5H9.04a.75.75 0 01-.75-.75zm0 3.5a.75.75 0 01.75-.75h3.92a.75.75 0 010 1.5H9.04a.75.75 0 01-.75-.75z" clip-rule="evenodd" /></svg>
-                        </a>
-                        <a href="https://in.linkedin.com/in/alok-shaji-95600121a" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                        </a>
-                        <a href="https://twitter.com/alok__shaji?lang=en" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                        </a>
+        <section id="projects">
+            <div class="max-w-4xl mx-auto bg-gray-800 bg-opacity-70 backdrop-blur-md border border-gray-700 rounded-2xl p-8 md:p-12 shadow-2xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-cyan-400 mb-8 text-center">Featured Project</h2>
+                <div class="flex flex-col lg:flex-row gap-8 items-center">
+                    <div class="lg:w-1/2">
+                        <h3 class="font-bold text-2xl text-white mb-3">Smart Pen with Gesture Detection</h3>
+                        <p class="text-gray-400 text-md mb-4">This innovative project brings writing into the third dimension. The Smart Pen allows users to write in the air, translating physical gestures into digital text or commands.</p>
+                        <p class="text-gray-400 text-md">Using an accelerometer and gyroscope, the pen tracks its movement with high precision. This data is processed in real-time by a custom algorithm that recognizes character strokes and commands. It's a step towards a more intuitive and seamless interaction with our digital devices.</p>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <!-- Replace with your project photo -->
+                        <img src="https://placehold.co/600x400/1f2937/ffffff?text=Smart+Pen" alt="Smart Pen Project" class="w-full rounded-lg shadow-lg">
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </section>
 
+        <section id="contact">
+            <div class="max-w-lg mx-auto w-full bg-gray-800 bg-opacity-70 backdrop-blur-md border border-gray-700 rounded-2xl p-8 md:p-12 shadow-2xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-cyan-400 mb-6 text-center">Get In Touch</h2>
+                <form action="#" method="POST" class="space-y-4">
+                    <div>
+                        <label for="name" class="sr-only">Name</label>
+                        <input type="text" name="name" id="name" placeholder="Your Name" class="w-full bg-gray-700 border-gray-600 text-white rounded-md p-3 focus:ring-cyan-500 focus:border-cyan-500 transition">
+                    </div>
+                    <div>
+                        <label for="email" class="sr-only">Email</label>
+                        <input type="email" name="email" id="email" placeholder="Your Email" class="w-full bg-gray-700 border-gray-600 text-white rounded-md p-3 focus:ring-cyan-500 focus:border-cyan-500 transition">
+                    </div>
+                    <div>
+                        <label for="message" class="sr-only">Message</label>
+                        <textarea name="message" id="message" rows="4" placeholder="Your Message" class="w-full bg-gray-700 border-gray-600 text-white rounded-md p-3 focus:ring-cyan-500 focus:border-cyan-500 transition"></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-300">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pages = document.querySelectorAll('.page');
+            // --- 3D Background ---
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
 
-            function showPage(pageId) {
-                pages.forEach(page => {
-                    page.classList.remove('active');
-                });
-                document.getElementById(pageId).classList.add('active');
+            const particlesGeometry = new THREE.BufferGeometry;
+            const particlesCount = 5000;
+            const posArray = new Float32Array(particlesCount * 3);
 
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.dataset.page === pageId) {
-                        link.classList.add('active');
-                    }
-                });
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 50;
             }
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const pageId = this.dataset.page;
-                    showPage(pageId);
-                });
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.015,
+                color: 0x22d3ee
+            });
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            camera.position.z = 5;
+
+            const clock = new THREE.Clock();
+            const animate = () => {
+                const elapsedTime = clock.getElapsedTime();
+                particlesMesh.rotation.y = elapsedTime * 0.1;
+                renderer.render(scene, camera);
+                window.requestAnimationFrame(animate);
+            };
+            animate();
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
             });
 
-            const textElement = document.getElementById('typing-text');
-            const phrases = ["Student", "Developer", "Photographer"];
-            let phraseIndex = 0;
-            let charIndex = 0;
-            let isDeleting = false;
+            // --- Nav highlighting on scroll ---
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a.nav-link');
 
-            function type() {
-                const currentPhrase = phrases[phraseIndex];
-                if (isDeleting) {
-                    textElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                    charIndex--;
-                } else {
-                    textElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                    charIndex++;
-                }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.dataset.section === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
 
-                let typeSpeed = 150;
-                if (isDeleting) {
-                    typeSpeed /= 2;
-                }
-
-                if (!isDeleting && charIndex === currentPhrase.length) {
-                    typeSpeed = 2000;
-                    isDeleting = true;
-                } else if (isDeleting && charIndex === 0) {
-                    isDeleting = false;
-                    phraseIndex = (phraseIndex + 1) % phrases.length;
-                    typeSpeed = 500;
-                }
-                
-                setTimeout(type, typeSpeed);
-            }
-
-            type();
-            showPage('home');
+            sections.forEach(section => {
+                observer.observe(section);
+            });
         });
     </script>
 </body>
