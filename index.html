@@ -1,332 +1,652 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alok Shaji</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Alok Shaji | Portfolio</title>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: '#0A0A0B',
+                        primary: '#06b6d4', // Cyan 500
+                        secondary: '#3b82f6', // Blue 500
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        html {
-            scroll-behavior: smooth;
-        }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000000;
-            color: #f0f0f0;
-        }
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        .nav-link {
-            cursor: pointer;
-            position: relative;
-            transition: color 0.3s ease;
-            font-weight: 500;
-            color: #a0a0a0;
-        }
-        .nav-link.active, .nav-link:hover {
+            background-color: #0A0A0B;
             color: #ffffff;
+            overflow-x: hidden;
         }
-        section {
-            min-height: 100vh;
-            padding: 8rem 2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-panel:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #22d3ee, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A0B;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Animation classes */
+        .reveal {
             opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
         }
-        section.visible {
+        .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
-        .glass-card {
-            background: rgba(10, 10, 10, 0.5);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
+
+        /* Typewriter cursor */
+        .cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Interactive Glow Effect */
+        .interactive-element {
+            position: relative;
+            overflow: hidden;
+        }
+        .interactive-element::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(6, 182, 212, 0.12), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .interactive-element:hover::before {
+            opacity: 1;
+        }
+        
+        /* 3D Tilt */
+        .tilt {
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            will-change: transform;
         }
     </style>
 </head>
-<body class="text-white">
+<body class="antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
 
-    <canvas id="bg-canvas"></canvas>
+    <!-- Ambient Background Blobs -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div id="blob-1" class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-cyan-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob transition-transform duration-300 ease-out"></div>
+        <div id="blob-2" class="absolute top-[20%] right-[-10%] w-96 h-96 bg-blue-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 transition-transform duration-300 ease-out"></div>
+        <div id="blob-3" class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-purple-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000 transition-transform duration-300 ease-out"></div>
+    </div>
 
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-        <nav class="max-w-7xl mx-auto p-4 md:p-6">
-            <ul class="flex justify-center md:justify-end space-x-6 md:space-x-10">
-                <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
-                <li><a href="#about" class="nav-link" data-section="about">About</a></li>
-                <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
-                <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
-            </ul>
-        </nav>
+    <!-- Navigation -->
+    <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#home" class="text-xl font-bold tracking-tighter hover:scale-105 transition-transform text-gradient">
+                AS.
+            </a>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden relative z-50 w-8 h-8 flex flex-col justify-center items-center text-gray-300">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
+                    Home
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#about" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
+                    About
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#projects" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
+                    Projects
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#contact" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
+                    Contact
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Mobile Nav Menu (Hidden by default) -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#0A0A0B]/95 backdrop-blur-xl z-40 hidden flex-col items-center justify-center space-y-8 opacity-0 transition-opacity duration-300">
+            <a href="#home" class="mobile-link text-2xl font-semibold text-gray-300 hover:text-white">Home</a>
+            <a href="#about" class="mobile-link text-2xl font-semibold text-gray-300 hover:text-white">About</a>
+            <a href="#projects" class="mobile-link text-2xl font-semibold text-gray-300 hover:text-white">Projects</a>
+            <a href="#contact" class="mobile-link text-2xl font-semibold text-gray-300 hover:text-white">Contact</a>
+        </div>
     </header>
 
     <main class="relative z-10">
         
-        <section id="home">
-            <div class="text-center flex flex-col items-center">
-                <!-- Replaced placeholder with alok1.jpg -->
-                <img src="alok1.jpg" onerror="this.onerror=null;this.src='https://placehold.co/150x150/000000/ffffff?text=AS';" alt="Alok Shaji's profile picture" class="w-36 h-36 rounded-full mb-6 border-4 border-gray-800 shadow-2xl">
-                <h1 class="text-5xl md:text-7xl font-bold text-white mb-3">Alok Shaji</h1>
-                <h2 class="text-xl md:text-2xl text-cyan-400 font-light tracking-wide">Computer Science Student</h2>
+        <!-- Hero Section -->
+        <section id="home" class="min-h-screen flex items-center justify-center px-6 py-20">
+            <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Text Content -->
+                <div class="space-y-8 order-2 lg:order-1 reveal">
+                    <div class="space-y-4">
+                        <h2 class="text-sm md:text-base text-cyan-400 font-medium tracking-widest uppercase tracking-wide">Welcome to my universe</h2>
+                        <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight">
+                            I'm <br/><span class="text-gradient">Alok Shaji</span>
+                        </h1>
+                        <div class="text-xl sm:text-2xl md:text-3xl text-gray-300 font-light h-[40px]">
+                            <span id="typewriter" class="cursor text-gray-300"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3 text-gray-400 text-sm md:text-base">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-location-dot text-cyan-400 w-5"></i>
+                            <span>Kerala, India</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-graduation-cap text-cyan-400 w-5"></i>
+                            <span>Sahrdaya College of Engineering and Technology</span>
+                        </div>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <a href="https://www.linkedin.com/in/alok-shaji-95600121a/" target="_blank" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-cyan-500 hover:text-white transition-all duration-300 hover:scale-110 group">
+                            <i class="fab fa-linkedin-in text-gray-300 group-hover:text-white transition-colors"></i>
+                        </a>
+                        <a href="https://twitter.com/alok__shaji" target="_blank" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-cyan-500 hover:text-white transition-all duration-300 hover:scale-110 group">
+                            <i class="fab fa-x-twitter text-gray-300 group-hover:text-white transition-colors"></i>
+                        </a>
+                        <a href="https://www.instagram.com/alok.shaji" target="_blank" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-cyan-500 hover:text-white transition-all duration-300 hover:scale-110 group">
+                            <i class="fab fa-instagram text-gray-300 group-hover:text-white transition-colors"></i>
+                        </a>
+                        <a href="https://wa.me/919846518514" target="_blank" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-cyan-500 hover:text-white transition-all duration-300 hover:scale-110 group">
+                            <i class="fab fa-whatsapp text-gray-300 group-hover:text-white transition-colors"></i>
+                        </a>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-4">
+                        <a href="#projects" class="inline-flex items-center justify-center gap-2 px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:-translate-y-1">
+                            View My Work
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Profile Image -->
+                <div class="order-1 lg:order-2 flex justify-center lg:justify-end reveal relative tilt">
+                    <div class="relative w-64 h-64 sm:w-80 sm:h-80">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500 to-blue-500 rounded-full blur-2xl opacity-40 animate-pulse"></div>
+                        <div class="absolute inset-2 bg-[#0A0A0B] rounded-full z-10 flex items-center justify-center border border-white/10">
+                            <div class="w-[96%] h-[96%] rounded-full overflow-hidden relative">
+                                <img src="alok1.jpg" onerror="this.onerror=null;this.src='https://placehold.co/400x400/111/fff?text=Alok';" alt="Alok Shaji" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <!-- Floating Tech Icons -->
+                        <div class="absolute inset-0 z-20">
+                            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-[#0A0A0B] rounded-full border border-white/10 flex items-center justify-center shadow-lg text-cyan-400">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="absolute bottom-4 left-4 w-10 h-10 bg-[#0A0A0B] rounded-full border border-white/10 flex items-center justify-center shadow-lg text-blue-400">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="absolute top-1/2 right-[-1rem] -translate-y-1/2 w-10 h-10 bg-[#0A0A0B] rounded-full border border-white/10 flex items-center justify-center shadow-lg text-purple-400">
+                                <i class="fas fa-terminal"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
-        <section id="about">
-            <div class="max-w-5xl mx-auto glass-card p-8 md:p-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-8 text-center">About Me</h2>
-                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                    <!-- Replace with your photo -->
-                    <img src="https://placehold.co/400x400/1f2937/ffffff?text=About+Me" alt="A photo of Alok Shaji" class="w-56 h-56 md:w-72 md:h-72 rounded-2xl object-cover shadow-2xl flex-shrink-0">
-                    <div class="text-gray-300 text-lg leading-relaxed text-center md:text-left">
-                        <p class="mb-5">
-                            I'm a Computer Science and Engineering student at Sahrdaya College, driven by a deep-seated curiosity for technology and a passion for creating solutions that make a tangible impact.
+        <!-- About Section -->
+        <section id="about" class="py-24 px-6 relative">
+            <div class="max-w-7xl mx-auto space-y-12">
+                <div class="reveal">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-4">About <span class="text-gradient">Me</span></h2>
+                    <p class="text-gray-400 text-lg">Get to know my journey and what drives me.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Main About Text -->
+                    <div class="lg:col-span-2 glass-panel rounded-3xl p-8 md:p-10 space-y-6 reveal interactive-element tilt">
+                        <div class="flex items-center gap-4 text-cyan-400 mb-2">
+                            <i class="fas fa-user-astronaut text-2xl relative z-10"></i>
+                            <h3 class="text-2xl font-semibold text-white relative z-10">Who I Am</h3>
+                        </div>
+                        <p class="text-gray-300 leading-relaxed text-lg relative z-10">
+                            I'm a Computer Science and Engineering student driven by a deep-seated curiosity for technology and a passion for creating solutions that make a tangible impact. 
                         </p>
-                        <p>
-                            From architecting backend systems to designing intuitive user interfaces, I thrive on tackling complex challenges. I am constantly exploring new technologies to build robust, real-world applications.
+                        <p class="text-gray-300 leading-relaxed text-lg relative z-10">
+                            From architecting backend systems to designing intuitive user interfaces, I thrive on tackling complex challenges. Whether it's writing clean code, building hardware-software bridges, or exploring the latest frameworks, I am constantly evolving to build robust, real-world applications.
                         </p>
                     </div>
+
+                    <!-- Focus Areas / Roles -->
+                    <div class="glass-panel rounded-3xl p-8 md:p-10 space-y-6 reveal interactive-element tilt" style="transition-delay: 200ms;">
+                        <h3 class="text-2xl font-semibold text-white mb-6 relative z-10">What I Do</h3>
+                        <div class="space-y-5 relative z-10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/20">
+                                    <i class="fas fa-laptop-code text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-100">Full Stack Dev</h4>
+                                    <p class="text-sm text-gray-400">Building scalable web apps.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                                    <i class="fas fa-microchip text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-100">Hardware Integration</h4>
+                                    <p class="text-sm text-gray-400">Bridging physical and digital.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
+                                    <i class="fas fa-lightbulb text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-100">Problem Solving</h4>
+                                    <p class="text-sm text-gray-400">Algorithms & logic.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Core Skills (Grid) -->
+                <div class="pt-10 reveal">
+                    <h3 class="text-2xl font-bold mb-8 text-center text-gray-200">Core Technologies</h3>
+                    <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+                        <!-- Skill Badge -->
+                        <div class="flex items-center gap-3 px-5 py-3 glass-panel rounded-2xl hover:-translate-y-1 transition-transform">
+                            <i class="fab fa-python text-2xl text-blue-400"></i>
+                            <span class="font-medium">Python</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-5 py-3 glass-panel rounded-2xl hover:-translate-y-1 transition-transform">
+                            <i class="fab fa-js text-2xl text-yellow-400"></i>
+                            <span class="font-medium">JavaScript</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-5 py-3 glass-panel rounded-2xl hover:-translate-y-1 transition-transform">
+                            <i class="fas fa-c text-2xl text-blue-500"></i>
+                            <span class="font-medium">C / C++</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-5 py-3 glass-panel rounded-2xl hover:-translate-y-1 transition-transform">
+                            <i class="fab fa-react text-2xl text-cyan-400"></i>
+                            <span class="font-medium">React</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-5 py-3 glass-panel rounded-2xl hover:-translate-y-1 transition-transform">
+                            <i class="fab fa-node-js text-2xl text-green-500"></i>
+                            <span class="font-medium">Node.js</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-5 py-3 glass-panel rounded-2xl hover:-translate-y-1 transition-transform">
+                            <i class="fab fa-git-alt text-2xl text-orange-500"></i>
+                            <span class="font-medium">Git</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="projects">
-            <div class="max-w-5xl mx-auto glass-card p-8 md:p-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-10 text-center">Featured Project</h2>
-                <div class="flex flex-col lg:flex-row-reverse gap-8 md:gap-12 items-center">
-                    <div class="lg:w-1/2">
-                        <h3 class="font-bold text-3xl text-cyan-400 mb-4">Smart Pen</h3>
-                        <p class="text-gray-300 text-lg mb-4 leading-relaxed">An innovative device that redefines digital interaction by allowing users to write in the air. The Smart Pen translates physical gestures into digital text and commands with remarkable precision.</p>
-                        <p class="text-gray-400 text-md leading-relaxed">Leveraging an integrated accelerometer and gyroscope, the pen tracks its motion in 3D space. This data is fed into a custom real-time algorithm that recognizes character strokes, enabling a seamless and intuitive way to interact with digital devices.</p>
+        <!-- Projects Section -->
+        <section id="projects" class="py-24 px-6 relative">
+            <div class="max-w-7xl mx-auto space-y-12">
+                <div class="reveal">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-4">Featured <span class="text-gradient">Projects</span></h2>
+                    <p class="text-gray-400 text-lg">A showcase of things I've built and experimented with.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Featured Project 1: Smart Pen (Spans 2 cols on lg) -->
+                    <div class="lg:col-span-2 group glass-panel rounded-3xl overflow-hidden flex flex-col md:flex-row reveal hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 interactive-element tilt">
+                        <div class="md:w-1/2 relative overflow-hidden bg-gray-900 border-r border-white/5 z-10">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-transparent to-transparent opacity-50 z-10"></div>
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800" alt="Smart Pen" class="w-full h-64 md:h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div class="md:w-1/2 p-8 md:p-10 flex flex-col justify-center relative z-10">
+                            <div class="absolute top-4 right-4 opacity-10">
+                                <i class="fas fa-pen-nib text-6xl"></i>
+                            </div>
+                            <div class="mb-4 flex justify-between items-start">
+                                <h3 class="text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors">Smart Pen</h3>
+                                <span class="px-3 py-1 text-xs font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded-full">Hardware + AI</span>
+                            </div>
+                            <p class="text-gray-400 text-sm md:text-base mb-6 leading-relaxed">
+                                An innovative device that redefines digital interaction by allowing users to write in the air. Leveraging an integrated accelerometer and gyroscope, the pen tracks its motion in 3D space. This data feeds into a custom real-time algorithm that recognizes character strokes flawlessly.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-auto">
+                                <span class="px-3 py-1 text-[11px] font-medium bg-white/5 text-gray-300 rounded-full border border-white/10">C++</span>
+                                <span class="px-3 py-1 text-[11px] font-medium bg-white/5 text-gray-300 rounded-full border border-white/10">Python</span>
+                                <span class="px-3 py-1 text-[11px] font-medium bg-white/5 text-gray-300 rounded-full border border-white/10">Sensor Fusion</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="lg:w-1/2">
-                        <!-- Replace with your project photo -->
-                        <img src="https://placehold.co/600x450/111827/ffffff?text=Smart+Pen" alt="Smart Pen Project" class="w-full rounded-xl shadow-2xl">
-                    </div>
+
                 </div>
             </div>
         </section>
 
-        <section id="contact">
-            <div class="max-w-xl mx-auto w-full glass-card p-8 md:p-12">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-8 text-center">Get In Touch</h2>
-                <form action="#" method="POST" class="space-y-6">
-                    <div>
-                        <input type="text" name="name" placeholder="Your Name" class="w-full bg-gray-800 border-2 border-gray-700 text-white rounded-lg p-4 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-300 outline-none">
+        <!-- Contact Section -->
+        <section id="contact" class="py-24 px-6 relative">
+            <div class="max-w-3xl mx-auto reveal">
+                <div class="glass-panel rounded-3xl p-8 md:p-12 border border-white/10 relative overflow-hidden interactive-element tilt">
+                    <!-- Decorative background element for form -->
+                    <div class="absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="text-center mb-10 relative z-10">
+                        <h2 class="text-4xl font-bold mb-4">Let's <span class="text-gradient">Connect</span></h2>
+                        <p class="text-gray-400">Have a question or want to work together? Drop me a message.</p>
                     </div>
-                    <div>
-                        <input type="email" name="email" placeholder="Your Email" class="w-full bg-gray-800 border-2 border-gray-700 text-white rounded-lg p-4 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-300 outline-none">
-                    </div>
-                    <div>
-                        <textarea name="message" rows="5" placeholder="Your Message" class="w-full bg-gray-800 border-2 border-gray-700 text-white rounded-lg p-4 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-300 outline-none"></textarea>
-                    </div>
-                    <div class="text-center pt-2">
-                        <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 px-10 rounded-lg transition-all duration-300 w-full md:w-auto">Send Message</button>
-                    </div>
-                </form>
-                <div class="flex justify-center items-center space-x-6 mt-8">
-                    <a href="https://www.instagram.com/alok.shaji" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.585-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.585-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.585.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.415 2.175 8.796 2.163 12 2.163zm0 1.441c-3.117 0-3.483.011-4.71.069-2.734.124-3.958 1.348-4.082 4.082-.058 1.227-.069 1.592-.069 4.71s.011 3.483.069 4.71c.124 2.734 1.348 3.958 4.082 4.082 1.227.058 1.592.069 4.71.069s3.483-.011 4.71-.069c2.734-.124 3.958-1.348 4.082-4.082.058-1.227.069-1.592.069-4.71s-.011-3.483-.069-4.71c-.124-2.734-1.348-3.958-4.082-4.082-1.227-.058-1.592-.069-4.71-.069zM12 6.845a5.155 5.155 0 100 10.31 5.155 5.155 0 000-10.31zm0 8.518a3.363 3.363 0 110-6.726 3.363 3.363 0 010 6.726zM17.636 5.852a1.232 1.232 0 100 2.464 1.232 1.232 0 000-2.464z" clip-rule="evenodd"/></svg>
-                    </a>
-                    <a href="https://wa.me/919846518514" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2.02c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM12.04 20.15h-.01c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31c-.82-1.31-1.26-2.83-1.26-4.38 0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42s2.42 3.62 2.42 5.82c0 4.54-3.7 8.24-8.24 8.24zm4.52-6.13c-.25-.12-1.47-.72-1.7-.81-.23-.09-.39-.12-.56.12-.17.25-.64.81-.79.97-.15.17-.29.19-.54.06-.25-.12-1.06-.39-2.02-1.25-.75-.67-1.25-1.5-1.4-1.75-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.09-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.42h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.76 2.66 4.26 3.72.59.25 1.05.41 1.41.52.6.19 1.14.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.12-.23-.19-.48-.31z"/></svg>
-                    </a>
-                    <a href="https://www.linkedin.com/in/alok-shaji-95600121a/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                    </a>
-                    <a href="https://twitter.com/alok__shaji" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    </a>
+
+                    <form action="#" method="POST" class="space-y-6 relative z-10" onsubmit="event.preventDefault(); alert('Message feature is a mockup. Please contact me via LinkedIn or Email.');">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-400 mb-2">Your Name</label>
+                                <input type="text" id="name" name="name" required
+                                    class="w-full bg-[#0A0A0B]/50 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-400 mb-2">Your Email</label>
+                                <input type="email" id="email" name="email" required
+                                    class="w-full bg-[#0A0A0B]/50 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-400 mb-2">Your Message</label>
+                            <textarea id="message" name="message" rows="5" required
+                                class="w-full bg-[#0A0A0B]/50 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all resize-none"></textarea>
+                        </div>
+                        <div class="text-center pt-2">
+                            <button type="submit" class="w-full md:w-auto px-10 py-4 bg-white/5 border border-white/10 hover:bg-cyan-500 hover:text-black hover:border-cyan-500 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 mx-auto">
+                                Send Message
+                                <i class="fas fa-paper-plane text-sm"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </section>
+
     </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-[#0A0A0B]/80 backdrop-blur-md relative z-10">
+        <div class="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <a href="#home" class="text-2xl font-bold tracking-tighter text-gradient mb-2 inline-block">AS.</a>
+                <p class="text-gray-500 text-sm">© 2026 Alok Shaji. All rights reserved.</p>
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="https://www.linkedin.com/in/alok-shaji-95600121a/" target="_blank" class="text-gray-500 hover:text-cyan-400 transition-colors">
+                    <i class="fab fa-linkedin text-xl"></i>
+                </a>
+                <a href="https://twitter.com/alok__shaji" target="_blank" class="text-gray-500 hover:text-cyan-400 transition-colors">
+                    <i class="fab fa-x-twitter text-xl"></i>
+                </a>
+                <a href="https://www.instagram.com/alok.shaji" target="_blank" class="text-gray-500 hover:text-cyan-400 transition-colors">
+                    <i class="fab fa-instagram text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <a href="#home" id="scrollTopBtn" class="fixed bottom-8 right-8 w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/10 text-white rounded-full flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 hover:bg-cyan-500 hover:text-black z-50">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Scripts -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // --- 3D Background Setup ---
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
+        document.addEventListener('DOMContentLoaded', () => {
             
-            // Background Particles
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 5000;
-            const posArray = new Float32Array(particlesCount * 3);
-            for(let i = 0; i < particlesCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 20;
-            }
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            
-            const particlesMaterial = new THREE.PointsMaterial({
-                size: 0.008,
-                transparent: true,
-                blending: THREE.AdditiveBlending
-            });
-            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-            scene.add(particlesMesh);
+            // --- 1. Typewriter Effect ---
+            const phrases = ["Computer Science Student", "Tech Enthusiast", "Problem Solver"];
+            const typewriterEl = document.getElementById('typewriter');
+            let phraseIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let typingSpeed = 100;
 
-            // Mouse Sparkle Particles
-            const sparkleGeometry = new THREE.BufferGeometry();
-            const sparkleCount = 200;
-            const sparklePosArray = new Float32Array(sparkleCount * 3);
-            const sparkleInfo = [];
-            for(let i = 0; i < sparkleCount; i++) {
-                sparklePosArray[i*3] = sparklePosArray[i*3+1] = sparklePosArray[i*3+2] = 9999; // Start offscreen
-                sparkleInfo.push({ life: 0, velocity: new THREE.Vector3() });
-            }
-            sparkleGeometry.setAttribute('position', new THREE.BufferAttribute(sparklePosArray, 3));
-            const sparkleMaterial = new THREE.PointsMaterial({
-                size: 0.05,
-                color: 0xffffff,
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-            const sparkles = new THREE.Points(sparkleGeometry, sparkleMaterial);
-            scene.add(sparkles);
-            let currentSparkle = 0;
-            
-            camera.position.z = 5;
-
-            // --- Dynamic State ---
-            const sectionColors = [
-                new THREE.Color(0x00ffff), // Home (cyan)
-                new THREE.Color(0x0077ff), // About (blue)
-                new THREE.Color(0xff4500), // Projects (orange-red)
-                new THREE.Color(0x9400d3)  // Contact (dark violet)
-            ];
-            let mouseX = 0;
-            let mouseY = 0;
-            let activeSectionIndex = 0;
-            const mousePosition = new THREE.Vector2();
-
-            // --- Event Listeners ---
-            document.addEventListener('mousemove', (event) => {
-                mouseX = event.clientX;
-                mouseY = event.clientY;
-                mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mousePosition.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            });
-            window.addEventListener('resize', () => {
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-            });
-
-            // --- Animation Loop ---
-            const clock = new THREE.Clock();
-            const animate = () => {
-                const elapsedTime = clock.getElapsedTime();
+            function type() {
+                const currentPhrase = phrases[phraseIndex];
                 
-                // Animate background particles
-                particlesMesh.rotation.y = -0.01 * elapsedTime;
-                particlesMesh.rotation.x += (-(mouseY / window.innerHeight - 0.5) * 0.5 - particlesMesh.rotation.x) * 0.02;
-                particlesMesh.rotation.y += (-(mouseX / window.innerWidth - 0.5) * 0.5 - particlesMesh.rotation.y) * 0.02;
-
-                // Animate sparkles
-                for (let i = 0; i < sparkleCount; i++) {
-                    const info = sparkleInfo[i];
-                    if (info.life > 0) {
-                        info.life -= 0.02;
-                        if (info.life <= 0) {
-                            sparklePosArray[i*3] = sparklePosArray[i*3+1] = sparklePosArray[i*3+2] = 9999;
-                        } else {
-                            sparklePosArray[i*3] += info.velocity.x;
-                            sparklePosArray[i*3+1] += info.velocity.y;
-                            sparklePosArray[i*3+2] += info.velocity.z;
-                        }
-                    }
-                }
-                sparkleGeometry.attributes.position.needsUpdate = true;
-
-                // Safely get the target color based on the active section
-                const targetColor = sectionColors[activeSectionIndex];
-                if (targetColor) {
-                    particlesMaterial.color.lerp(targetColor, 0.05);
+                if (isDeleting) {
+                    typewriterEl.textContent = currentPhrase.substring(0, charIndex - 1);
+                    charIndex--;
+                    typingSpeed = 50; // Delete faster
+                } else {
+                    typewriterEl.textContent = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                    typingSpeed = 100; // Type normal speed
                 }
 
-                // Camera parallax
-                const parallaxX = (mouseX / window.innerWidth - 0.5);
-                const parallaxY = -(mouseY / window.innerHeight - 0.5);
-                camera.position.x += (parallaxX - camera.position.x) * 0.05;
-                camera.position.y += (parallaxY - camera.position.y) * 0.05;
+                if (!isDeleting && charIndex === currentPhrase.length) {
+                    typingSpeed = 2000; // Pause at end of phrase
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    typingSpeed = 500; // Pause before new phrase
+                }
 
-                renderer.render(scene, camera);
-                window.requestAnimationFrame(animate);
-            };
-            animate();
-
-            // Function to spawn sparkles
-            function spawnSparkle() {
-                const info = sparkleInfo[currentSparkle];
-                info.life = Math.random() * 2 + 1; // Lifespan between 1 and 3 seconds
-
-                // Get mouse position in 3D space
-                const mouse3D = new THREE.Vector3(mousePosition.x, mousePosition.y, 0.5);
-                mouse3D.unproject(camera);
-                
-                sparklePosArray[currentSparkle*3] = mouse3D.x;
-                sparklePosArray[currentSparkle*3+1] = mouse3D.y;
-                sparklePosArray[currentSparkle*3+2] = mouse3D.z;
-
-                info.velocity.set(
-                    (Math.random() - 0.5) * 0.01,
-                    (Math.random() - 0.5) * 0.01,
-                    (Math.random() - 0.5) * 0.01
-                );
-                
-                currentSparkle = (currentSparkle + 1) % sparkleCount;
+                setTimeout(type, typingSpeed);
             }
-            window.addEventListener('mousemove', spawnSparkle);
+            
+            // Start typewriter after a short delay
+            setTimeout(type, 1000);
 
 
-            // --- Scroll Observer ---
-            const sections = document.querySelectorAll('section');
-            const navLinks = document.querySelectorAll('nav a.nav-link');
-            const sectionsArray = Array.from(sections);
+            // --- 2. Navbar & Scroll to Top functionality ---
+            const navbar = document.getElementById('navbar');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            
+            window.addEventListener('scroll', () => {
+                // Navbar blurring background
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-[#0A0A0B]/80', 'backdrop-blur-md', 'border-white/10');
+                    navbar.classList.remove('border-transparent');
+                } else {
+                    navbar.classList.remove('bg-[#0A0A0B]/80', 'backdrop-blur-md', 'border-white/10');
+                    navbar.classList.add('border-transparent');
+                }
 
-            const observer = new IntersectionObserver((entries) => {
+                // Scroll to top button visibility
+                if (window.scrollY > 500) {
+                    scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                    scrollTopBtn.classList.add('opacity-100', 'pointer-events-auto');
+                } else {
+                    scrollTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                    scrollTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
+                }
+            });
+
+
+            // --- 3. Scroll Reveal Animation (Intersection Observer) ---
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        const sectionId = entry.target.id;
-                        
-                        navLinks.forEach(link => {
-                            link.classList.toggle('active', link.dataset.section === sectionId);
-                        });
-
-                        // Update active section index for color animation
-                        const index = sectionsArray.findIndex(section => section.id === sectionId);
-                        if (index > -1) {
-                            activeSectionIndex = index;
-                        }
+                        entry.target.classList.add('active');
+                        // Stop observing once revealed to keep it visible
+                        observer.unobserve(entry.target);
                     }
                 });
-            }, { threshold: 0.3 });
+            }, {
+                root: null,
+                threshold: 0.15, // Trigger when 15% of element is visible
+                rootMargin: "0px 0px -50px 0px"
+            });
 
-            sections.forEach(section => {
-                observer.observe(section);
+            revealElements.forEach(el => revealObserver.observe(el));
+
+
+            // --- 4. Mobile Menu Toggle ---
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+            let isMenuOpen = false;
+
+            function toggleMenu() {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    // Small delay to allow display:block to apply before changing opacity
+                    setTimeout(() => mobileMenu.classList.remove('opacity-0'), 10);
+                    mobileBtn.innerHTML = '<i class="fas fa-times text-xl text-white"></i>';
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                } else {
+                    mobileMenu.classList.add('opacity-0');
+                    setTimeout(() => mobileMenu.classList.add('hidden'), 300); // Wait for transition
+                    mobileBtn.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            }
+
+            mobileBtn.addEventListener('click', toggleMenu);
+
+            // Close menu when clicking a link
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', toggleMenu);
+            });
+
+            // --- 5. Advanced Interactivity (Mouse Glow, Tilt, Parallax) ---
+            
+            // Mouse Glow Effect
+            const interactiveElements = document.querySelectorAll('.interactive-element');
+            
+            interactiveElements.forEach(el => {
+                el.addEventListener('mousemove', e => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    el.style.setProperty('--mouse-x', `${x}px`);
+                    el.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+
+            // 3D Tilt Effect
+            const tiltElements = document.querySelectorAll('.tilt');
+            
+            tiltElements.forEach(el => {
+                el.addEventListener('mousemove', e => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = ((y - centerY) / centerY) * -4; // Max 4 degrees rotation
+                    const rotateY = ((x - centerX) / centerX) * 4;
+                    
+                    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    el.style.transition = 'none'; // Remove transition during move for responsiveness
+                });
+                
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                    el.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)'; // Smooth reset
+                });
+            });
+
+            // Background Parallax
+            const blobs = [
+                document.getElementById('blob-1'),
+                document.getElementById('blob-2'),
+                document.getElementById('blob-3')
+            ];
+
+            window.addEventListener('mousemove', e => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 20; // Move up to 10px
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                
+                if (blobs[0]) blobs[0].style.transform = `translate(${x * 1.5}px, ${y * 1.5}px)`;
+                if (blobs[1]) blobs[1].style.transform = `translate(${x * -2.5}px, ${y * -2.5}px)`;
+                if (blobs[2]) blobs[2].style.transform = `translate(${x * 1}px, ${y * -1}px)`;
             });
         });
     </script>
